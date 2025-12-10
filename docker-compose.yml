@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: exi_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: exi_user
+      POSTGRES_PASSWORD: exi_password
+      POSTGRES_DB: exi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - exi_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exi_user -d exi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  backend:
+    build:
+      context: ./backend
+    container_name: exi_backend
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: exi_user
+      POSTGRES_PASSWORD: exi_password
+      POSTGRES_DB: exi_db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+
+volumes:
+  exi_db_data:
