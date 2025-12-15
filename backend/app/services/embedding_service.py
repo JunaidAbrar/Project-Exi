@@ -11,6 +11,7 @@ def build_rental_text(
     state: str,
     postcode: str,
     description: str | None,
+    pet_allowed: bool | None = None,
 ) -> str:
     parts = [
         address,
@@ -18,6 +19,8 @@ def build_rental_text(
         state,
         postcode,
     ]
+    if pet_allowed is not None:
+        parts.append("Pets allowed" if pet_allowed else "No pets")
     if description:
         parts.append(description)
     return ", ".join([p for p in parts if p])

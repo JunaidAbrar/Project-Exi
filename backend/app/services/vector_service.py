@@ -65,6 +65,7 @@ def upsert_rental_embedding(
         "suburb": rental.suburb,
         "state": rental.state,
         "postcode": rental.postcode,
+        "pet_allowed": rental.pet_allowed,
         "is_active": rental.is_active,
     }
 

@@ -20,6 +20,7 @@ class Rental(Base):
     bedrooms = Column(Integer, nullable=False)
     bathrooms = Column(Integer, nullable=False)
     car_spaces = Column(Integer, nullable=True)
+    pet_allowed = Column(Boolean, nullable=True)
 
     description = Column(Text, nullable=True)
     image_urls = Column(Text, nullable=True)  # comma-separated URLs

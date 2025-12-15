@@ -12,6 +12,7 @@ class RentalBase(BaseModel):
     bedrooms: int
     bathrooms: int
     car_spaces: int | None = None
+    pet_allowed: bool | None = None
     description: str | None = None
     image_urls: str | None = None
     is_active: bool = True

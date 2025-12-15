@@ -18,6 +18,7 @@ EXPECTED_COLUMNS = [
     "bedrooms",
     "bathrooms",
     "car_spaces",
+    "pet_allowed",
     "description",
     "image_urls",
 ]

@@ -27,6 +27,17 @@ def _parse_decimal_str(value: str) -> str:
     return value
 
 
+def _parse_bool(value: str) -> bool | None:
+    value = value.strip().lower()
+    if not value:
+        return None
+    if value in ("true", "yes", "1", "y"):
+        return True
+    if value in ("false", "no", "0", "n"):
+        return False
+    return None
+
+
 def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any]:
     """
     Syncs rentals for a single client from its Google Sheet.
@@ -71,6 +82,7 @@ def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any
         bedrooms = _parse_int(row["bedrooms"]) or 0
         bathrooms = _parse_int(row["bathrooms"]) or 0
         car_spaces = _parse_int(row["car_spaces"])
+        pet_allowed = _parse_bool(row["pet_allowed"])
 
         if ext_id in rentals_by_external:
             rental = rentals_by_external[ext_id]
@@ -84,6 +96,7 @@ def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any
                 or rental.bedrooms != bedrooms
                 or rental.bathrooms != bathrooms
                 or rental.car_spaces != car_spaces
+                or rental.pet_allowed != pet_allowed
                 or (rental.description or "") != row["description"]
                 or (rental.image_urls or "") != row["image_urls"]
                 or rental.is_active is False
@@ -98,6 +111,7 @@ def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any
                 rental.bedrooms = bedrooms
                 rental.bathrooms = bathrooms
                 rental.car_spaces = car_spaces
+                rental.pet_allowed = pet_allowed
                 rental.description = row["description"] or None
                 rental.image_urls = row["image_urls"] or None
                 rental.is_active = True
@@ -115,6 +129,7 @@ def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any
                 bedrooms=bedrooms,
                 bathrooms=bathrooms,
                 car_spaces=car_spaces,
+                pet_allowed=pet_allowed,
                 description=row["description"] or None,
                 image_urls=row["image_urls"] or None,
                 is_active=True,
@@ -157,6 +172,7 @@ def sync_client_rentals_from_sheet(db: Session, client: Client) -> Dict[str, Any
                 state=rental.state,
                 postcode=rental.postcode,
                 description=rental.description,
+                pet_allowed=rental.pet_allowed,
             )
             vector = embed_text(text)
             upsert_rental_embedding(client.id, rental, vector)
