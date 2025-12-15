@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.client import Client
 from app.models.api_key import ApiKey
-from app.schemas.client import ClientCreate, ClientRead
+from app.schemas.client import ClientCreate, ClientRead, ClientUpdate
 from app.schemas.api_key import ApiKeyRead
 
 router = APIRouter()
@@ -19,7 +19,7 @@ def create_client(payload: ClientCreate, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Client slug already exists",
         )
-    client = Client(name=payload.name, slug=payload.slug)
+    client = Client(name=payload.name, slug=payload.slug, sheet_url=payload.sheet_url)
     db.add(client)
     db.commit()
     db.refresh(client)
@@ -43,3 +43,26 @@ def create_api_key_for_client(client_slug: str, db: Session = Depends(get_db)):
     db.refresh(api_key)
 
     return api_key
+
+@router.patch("/{client_slug}", response_model=ClientRead)
+def update_client(
+    client_slug: str,
+    payload: ClientUpdate,
+    db: Session = Depends(get_db),
+):
+    client = db.query(Client).filter(Client.slug == client_slug).first()
+    if not client:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Client not found",
+        )
+
+    if payload.sheet_url is not None:
+        client.sheet_url = payload.sheet_url
+
+    if payload.is_active is not None:
+        client.is_active = payload.is_active
+
+    db.commit()
+    db.refresh(client)
+    return client

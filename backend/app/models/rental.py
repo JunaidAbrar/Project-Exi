@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -20,6 +20,9 @@ class Rental(Base):
     bedrooms = Column(Integer, nullable=False)
     bathrooms = Column(Integer, nullable=False)
     car_spaces = Column(Integer, nullable=True)
+
+    description = Column(Text, nullable=True)
+    image_urls = Column(Text, nullable=True)  # comma-separated URLs
 
     is_active = Column(Boolean, default=True, nullable=False)
 

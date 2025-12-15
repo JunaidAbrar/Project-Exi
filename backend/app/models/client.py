@@ -10,6 +10,8 @@ class Client(Base):
     name = Column(String(255), nullable=False, unique=True)
     # e.g. 'acme-real-estate-sa'
     slug = Column(String(255), nullable=False, unique=True)
+    
+    sheet_url = Column(String(512), nullable=True) 
 
     # TODO: store WhatsApp number, branding later (phase 5+)
     is_active = Column(Boolean, default=True, nullable=False)
